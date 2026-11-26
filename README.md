@@ -1,0 +1,30 @@
+# Aviator HOC – Android (Kotlin + Jetpack Compose)
+
+Native rewrite of the web app. Local only (Room database on the phone), no Firebase, no logo.
+UI direction: **D · Neon Mint (OLED)**.
+
+## Build the APK on GitHub (phone only, from Termux)
+
+```bash
+cd aviator-hoc-android
+git init -b main
+git add .
+git commit -m "Part 1"
+git remote add origin https://github.com/tharindu899/<repo>.git
+git push -u origin main
+```
+
+Open the repo → **Actions** → **Build APK** → open the finished run → download the
+`AviatorHOC-apk-N` artifact → install `AviatorHOC-debug-N.apk`.
+
+## Optional
+* **Sora font** – CI downloads it automatically. If the download fails the app uses the system font.
+* **Signed release** – add secrets `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`,
+  then run the workflow manually with *release* ticked.
+
+## Parts
+1. **Project, theme, Room DB, signal logic, CI** ← this part
+2. Home screen (hero countdown, upcoming list, WIN/LOSS strip, bottom nav)
+3. Generate screen
+4. Results screen (filters, search, export)
+5. Settings, sounds/haptics, auto-mark missed, polish
