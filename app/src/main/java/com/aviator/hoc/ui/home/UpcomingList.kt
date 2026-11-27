@@ -40,6 +40,7 @@ import kotlin.math.abs
 fun UpcomingList(
     signals: List<LiveSignal>,
     onGenerate: () -> Unit,
+    showCountdown: Boolean = true,
     modifier: Modifier = Modifier,
     bottomPadding: androidx.compose.ui.unit.Dp,
 ) {
@@ -68,14 +69,21 @@ fun UpcomingList(
                 contentPadding = PaddingValues(bottom = bottomPadding),
             ) {
                 items(signals, key = { it.id }) { s ->
-                    UpcomingRow(s, Modifier.animateItem())
+                    UpcomingRow(s, showCountdown, Modifier.animateItem())
                 }
             }
         }
     }
 }
 
-private fun countdownText(s: LiveSignal): String = when (s.status) {
+private fun countdownText(s: LiveSignal, showCountdown: Boolean): String = if (!showCountdown) {
+    when (s.status) {
+        WindowStatus.WAITING -> "Waiting"
+        WindowStatus.ACTIVE -> "Open"
+        WindowStatus.GRACE -> "Closing"
+        WindowStatus.CLOSED -> "Closed"
+    }
+} else when (s.status) {
     WindowStatus.WAITING -> "-" + formatCountdown(windowOpensInSeconds(s.countdown))
     WindowStatus.ACTIVE -> formatCountdown(s.countdown)
     WindowStatus.GRACE -> "+" + formatCountdown(abs(s.countdown))
@@ -83,7 +91,7 @@ private fun countdownText(s: LiveSignal): String = when (s.status) {
 }
 
 @Composable
-private fun UpcomingRow(s: LiveSignal, modifier: Modifier = Modifier) {
+private fun UpcomingRow(s: LiveSignal, showCountdown: Boolean, modifier: Modifier = Modifier) {
     val betNow = s.status == WindowStatus.ACTIVE || s.status == WindowStatus.GRACE
     val tone = if (betNow) Mint.Lime else Mint.Amber
     val pulse = rememberInfiniteTransition(label = "rowPulse")
@@ -113,7 +121,7 @@ private fun UpcomingRow(s: LiveSignal, modifier: Modifier = Modifier) {
             Column(horizontalAlignment = Alignment.End) {
                 Surface(shape = RoundedCornerShape(50), color = Mint.LimeChip.copy(alpha = if (betNow) 0f else 1f)) {
                     Text(
-                        countdownText(s),
+                        countdownText(s, showCountdown),
                         style = MaterialTheme.typography.titleMedium,
                         color = tone,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),

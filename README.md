@@ -27,4 +27,6 @@ Open the repo → **Actions** → **Build APK** → open the finished run → do
 2. **Home screen** (hero countdown, flowing bar, upcoming list, WIN/LOSS strip, animated nav) ← done
 3. **Generate screen** (paste, live preview, examples, validation) ← done
 4. **Results screen** (filters, search, sort, edit status, delete, export) ← done
-5. Settings, sounds/haptics, auto-mark missed, polish
+5. **Settings sheet** (name, auto-mark missed, live countdown, sound alerts, vibration, reset), beeps + buzz when a window opens / WIN-LOSS appears ← done
+
+Alerts work while the app is open (foreground).

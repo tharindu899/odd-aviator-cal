@@ -42,6 +42,7 @@ fun MarkStrip(
     mark: MarkInfo?,
     onWin: (Long) -> Unit,
     onLoss: (Long) -> Unit,
+    haptics: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     // keep the last content so the exit animation still has something to draw
@@ -55,12 +56,12 @@ fun MarkStrip(
             fadeIn(tween(200)) + scaleIn(initialScale = 0.92f),
         exit = slideOutVertically(tween(220)) { it } + fadeOut(tween(180)),
     ) {
-        last.value?.let { m -> MarkContent(m, onWin, onLoss) }
+        last.value?.let { m -> MarkContent(m, haptics, onWin, onLoss) }
     }
 }
 
 @Composable
-private fun MarkContent(m: MarkInfo, onWin: (Long) -> Unit, onLoss: (Long) -> Unit) {
+private fun MarkContent(m: MarkInfo, haptics: Boolean, onWin: (Long) -> Unit, onLoss: (Long) -> Unit) {
     val haptic = LocalHapticFeedback.current
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -82,7 +83,7 @@ private fun MarkContent(m: MarkInfo, onWin: (Long) -> Unit, onLoss: (Long) -> Un
                 )
             }
             PressableSurface(
-                onClick = { haptic.performHapticFeedback(HapticFeedbackType.LongPress); onWin(m.signal.id) },
+                onClick = { if (haptics) haptic.performHapticFeedback(HapticFeedbackType.LongPress); onWin(m.signal.id) },
                 shape = RoundedCornerShape(16.dp),
                 color = Mint.Lime,
             ) {
@@ -96,7 +97,7 @@ private fun MarkContent(m: MarkInfo, onWin: (Long) -> Unit, onLoss: (Long) -> Un
                 }
             }
             PressableSurface(
-                onClick = { haptic.performHapticFeedback(HapticFeedbackType.LongPress); onLoss(m.signal.id) },
+                onClick = { if (haptics) haptic.performHapticFeedback(HapticFeedbackType.LongPress); onLoss(m.signal.id) },
                 shape = RoundedCornerShape(16.dp),
                 color = Mint.Card,
                 border = BorderStroke(1.dp, Mint.Pink),

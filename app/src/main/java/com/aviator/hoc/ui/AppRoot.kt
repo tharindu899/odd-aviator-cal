@@ -28,9 +28,19 @@ import com.aviator.hoc.ui.home.HomeViewModel
 import com.aviator.hoc.ui.home.MarkStrip
 import com.aviator.hoc.ui.results.ResultsScreen
 import com.aviator.hoc.ui.results.ResultsViewModel
+import com.aviator.hoc.ui.settings.SettingsSheet
+import com.aviator.hoc.ui.settings.SettingsViewModel
 
 @Composable
-fun AppRoot(viewModel: HomeViewModel, generateViewModel: GenerateViewModel, resultsViewModel: ResultsViewModel) {
+fun AppRoot(
+    viewModel: HomeViewModel,
+    generateViewModel: GenerateViewModel,
+    resultsViewModel: ResultsViewModel,
+    settingsViewModel: SettingsViewModel,
+) {
+    val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
+    val saved by settingsViewModel.saved.collectAsStateWithLifecycle()
+    var showSettings by rememberSaveable { mutableStateOf(false) }
     val state by viewModel.state.collectAsStateWithLifecycle()
     val genState by generateViewModel.state.collectAsStateWithLifecycle()
     val resultsState by resultsViewModel.state.collectAsStateWithLifecycle()
@@ -46,9 +56,10 @@ fun AppRoot(viewModel: HomeViewModel, generateViewModel: GenerateViewModel, resu
                 when (t) {
                     Tab.Home -> HomeScreen(
                         state = state,
-                        userName = "Lalshan",
+                        userName = settings.userName,
+                        showCountdown = settings.showCountdown,
                         onGenerate = { tabIndex = Tab.Generate.ordinal },
-                        onSettings = { /* Part 5 */ },
+                        onSettings = { showSettings = true },
                         bottomPadding = bottomSpace,
                     )
                     Tab.Generate -> GenerateScreen(
@@ -74,8 +85,23 @@ fun AppRoot(viewModel: HomeViewModel, generateViewModel: GenerateViewModel, resu
                     mark = state.mark,
                     onWin = { viewModel.markWin(it) },
                     onLoss = { viewModel.markLoss(it) },
+                    haptics = settings.haptics,
                 )
                 BottomNav(selected = tab, onSelect = { tabIndex = it.ordinal })
+            }
+
+            if (showSettings) {
+                SettingsSheet(
+                    settings = settings,
+                    saved = saved,
+                    onDismiss = { showSettings = false },
+                    onAutoMark = settingsViewModel::setAutoMark,
+                    onCountdown = settingsViewModel::setCountdown,
+                    onSound = settingsViewModel::setSound,
+                    onHaptics = settingsViewModel::setHaptics,
+                    onName = settingsViewModel::setName,
+                    onReset = settingsViewModel::reset,
+                )
             }
         }
     }

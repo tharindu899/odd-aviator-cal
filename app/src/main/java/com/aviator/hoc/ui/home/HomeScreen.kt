@@ -29,6 +29,7 @@ import com.aviator.hoc.ui.theme.Mint
 fun HomeScreen(
     state: HomeUiState,
     userName: String,
+    showCountdown: Boolean,
     onGenerate: () -> Unit,
     onSettings: () -> Unit,
     bottomPadding: Dp,
@@ -38,12 +39,13 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         RiseIn(0) { Header(userName, onSettings) }
-        RiseIn(80) { HeroCard(state) }
+        RiseIn(80) { HeroCard(state, showCountdown) }
         RiseIn(160) { StatsRow(state) }
         RiseIn(240, Modifier.weight(1f)) {
             UpcomingList(
                 signals = state.upcoming,
                 onGenerate = onGenerate,
+                showCountdown = showCountdown,
                 bottomPadding = bottomPadding,
             )
         }

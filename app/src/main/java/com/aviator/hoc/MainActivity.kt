@@ -12,6 +12,7 @@ import com.aviator.hoc.ui.AppRoot
 import com.aviator.hoc.ui.generate.GenerateViewModel
 import com.aviator.hoc.ui.home.HomeViewModel
 import com.aviator.hoc.ui.results.ResultsViewModel
+import com.aviator.hoc.ui.settings.SettingsViewModel
 import com.aviator.hoc.ui.theme.AviatorTheme
 
 class MainActivity : ComponentActivity() {
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
             AviatorTheme {
                 val vm: HomeViewModel = viewModel(
                     factory = viewModelFactory {
-                        initializer { HomeViewModel(app.repository, app.settings) }
+                        initializer { HomeViewModel(app.repository, app.settings, app.alerts) }
                     },
                 )
                 val gen: GenerateViewModel = viewModel(
@@ -41,7 +42,17 @@ class MainActivity : ComponentActivity() {
                         initializer { ResultsViewModel(app.repository) }
                     },
                 )
-                AppRoot(viewModel = vm, generateViewModel = gen, resultsViewModel = results)
+                val settingsVm: SettingsViewModel = viewModel(
+                    factory = viewModelFactory {
+                        initializer { SettingsViewModel(app.settings, app.alerts) }
+                    },
+                )
+                AppRoot(
+                    viewModel = vm,
+                    generateViewModel = gen,
+                    resultsViewModel = results,
+                    settingsViewModel = settingsVm,
+                )
             }
         }
     }

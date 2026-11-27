@@ -39,7 +39,7 @@ import com.aviator.hoc.ui.theme.Mint
 import java.util.Locale
 
 @Composable
-fun HeroCard(state: HomeUiState, modifier: Modifier = Modifier) {
+fun HeroCard(state: HomeUiState, showCountdown: Boolean = true, modifier: Modifier = Modifier) {
     val cur = state.current
     if (cur == null) {
         EmptyHero(modifier)
@@ -53,7 +53,8 @@ fun HeroCard(state: HomeUiState, modifier: Modifier = Modifier) {
         (if (live) Mint.Lime else Mint.Amber).copy(alpha = 0.35f), tween(500), label = "border",
     )
 
-    val clock = formatClock(state.readoutSeconds)
+    // countdown hidden in Settings -> show the signal time itself instead
+    val clock = if (showCountdown) formatClock(state.readoutSeconds) else cur.resultTime.toString()
     val digitStyle = if (clock.length > 5) MaterialTheme.typography.displayMedium else MaterialTheme.typography.displayLarge
 
     Surface(
@@ -85,7 +86,11 @@ fun HeroCard(state: HomeUiState, modifier: Modifier = Modifier) {
 
             Spacer(Modifier.height(8.dp))
             Text(
-                text = if (live) "Window ends in" else "Window opens in",
+                text = when {
+                    !showCountdown -> "Signal at"
+                    live -> "Window ends in"
+                    else -> "Window opens in"
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 color = Mint.Muted,
             )
