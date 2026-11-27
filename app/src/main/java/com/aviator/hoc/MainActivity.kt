@@ -1,6 +1,11 @@
 package com.aviator.hoc
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -24,6 +29,22 @@ class MainActivity : ComponentActivity() {
         )
 
         val app = application as AviatorApp
+
+        // Android 13+: ask for notification permission (once on first launch, and again when the user turns it on)
+        val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
+        val askPermission = {
+            if (Build.VERSION.SDK_INT >= 33 &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+        val prefs = getSharedPreferences("onboarding", MODE_PRIVATE)
+        if (!prefs.getBoolean("asked_notifications", false)) {
+            prefs.edit().putBoolean("asked_notifications", true).apply()
+            askPermission()
+        }
 
         setContent {
             AviatorTheme {
@@ -52,6 +73,7 @@ class MainActivity : ComponentActivity() {
                     generateViewModel = gen,
                     resultsViewModel = results,
                     settingsViewModel = settingsVm,
+                    onRequestNotificationPermission = askPermission,
                 )
             }
         }

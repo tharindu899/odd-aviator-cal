@@ -37,6 +37,7 @@ fun AppRoot(
     generateViewModel: GenerateViewModel,
     resultsViewModel: ResultsViewModel,
     settingsViewModel: SettingsViewModel,
+    onRequestNotificationPermission: () -> Unit = {},
 ) {
     val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
     val saved by settingsViewModel.saved.collectAsStateWithLifecycle()
@@ -97,6 +98,10 @@ fun AppRoot(
                     onDismiss = { showSettings = false },
                     onAutoMark = settingsViewModel::setAutoMark,
                     onCountdown = settingsViewModel::setCountdown,
+                    onNotify = { on ->
+                        settingsViewModel.setNotify(on)
+                        if (on) onRequestNotificationPermission()
+                    },
                     onSound = settingsViewModel::setSound,
                     onHaptics = settingsViewModel::setHaptics,
                     onName = settingsViewModel::setName,

@@ -20,6 +20,8 @@ data class AppSettings(
     val sound: Boolean = false,
     /** vibrate when the window opens / closes */
     val haptics: Boolean = true,
+    /** system notification ~1 min before a signal (works with the app closed) */
+    val notify: Boolean = true,
     /** shown in "Hello, <name>" */
     val userName: String = DEFAULT_NAME,
 ) {
@@ -41,6 +43,7 @@ class SettingsStore(private val context: Context) {
         val countdown = booleanPreferencesKey("showCountdown")
         val sound = booleanPreferencesKey("sound")
         val haptics = booleanPreferencesKey("haptics")
+        val notify = booleanPreferencesKey("notify")
         val userName = stringPreferencesKey("userName")
     }
 
@@ -51,6 +54,7 @@ class SettingsStore(private val context: Context) {
             showCountdown = this[Keys.countdown] ?: d.showCountdown,
             sound = this[Keys.sound] ?: d.sound,
             haptics = this[Keys.haptics] ?: d.haptics,
+            notify = this[Keys.notify] ?: d.notify,
             userName = this[Keys.userName] ?: d.userName,
         )
     }
@@ -64,6 +68,7 @@ class SettingsStore(private val context: Context) {
             p[Keys.countdown] = next.showCountdown
             p[Keys.sound] = next.sound
             p[Keys.haptics] = next.haptics
+            p[Keys.notify] = next.notify
             p[Keys.userName] = cleanUserName(next.userName)
         }
     }

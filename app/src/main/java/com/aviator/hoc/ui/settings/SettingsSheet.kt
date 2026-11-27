@@ -79,6 +79,7 @@ fun SettingsSheet(
     onDismiss: () -> Unit,
     onAutoMark: (Boolean) -> Unit,
     onCountdown: (Boolean) -> Unit,
+    onNotify: (Boolean) -> Unit,
     onSound: (Boolean) -> Unit,
     onHaptics: (Boolean) -> Unit,
     onName: (String) -> Unit,
@@ -134,9 +135,16 @@ fun SettingsSheet(
                 onChange = onCountdown,
             )
             SettingRow(
+                icon = AppIcons.Alert,
+                title = "Signal notifications",
+                subtitle = "Notify with sound 1 minute before a signal, even when the app is closed",
+                checked = settings.notify,
+                onChange = onNotify,
+            )
+            SettingRow(
                 icon = AppIcons.Bolt,
-                title = "Sound alerts",
-                subtitle = "Beep when the window opens and when WIN / LOSS appears",
+                title = "In-app beeps",
+                subtitle = "Beep inside the app when the window opens and when WIN / LOSS appears",
                 checked = settings.sound,
                 onChange = onSound,
             )

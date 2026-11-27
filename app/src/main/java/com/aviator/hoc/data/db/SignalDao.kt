@@ -11,6 +11,9 @@ interface SignalDao {
     @Query("SELECT * FROM signals ORDER BY targetMs DESC")
     fun observeAll(): Flow<List<SignalEntity>>
 
+    @Query("SELECT * FROM signals WHERE id = :id")
+    suspend fun getById(id: Long): SignalEntity?
+
     @Insert
     suspend fun insert(signal: SignalEntity): Long
 
