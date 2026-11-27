@@ -27,8 +27,9 @@
 
 ---
 
+### ⚠️ Disclaimer — please read first
+
 > [!WARNING]
-> ### ⚠️ Disclaimer — please read first
 > This app is a **time calculator and personal log**. It does **not** predict, guarantee or influence the result of any game.
 >
 > * 🎲 Betting and gambling can cause **real financial loss** and can be addictive. **Never risk money you cannot afford to lose.**
