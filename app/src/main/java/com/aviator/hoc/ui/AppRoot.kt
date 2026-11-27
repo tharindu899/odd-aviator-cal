@@ -115,6 +115,7 @@ fun AppRoot(
                     saved = saved,
                     onBack = { showSettings = false },
                     onAutoMark = settingsViewModel::setAutoMark,
+                    onMissedAfter = settingsViewModel::setMissedAfter,
                     onCountdown = settingsViewModel::setCountdown,
                     onTheme = settingsViewModel::setTheme,
                     onNotify = { on ->

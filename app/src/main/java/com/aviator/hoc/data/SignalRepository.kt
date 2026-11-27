@@ -63,8 +63,10 @@ class SignalRepository(private val dao: SignalDao) {
         dao.setStatus(id, status, auto = false, now = nowMs)
 
     /** Pending signals whose WIN/LOSS window is over become MISSED. Returns how many changed. */
-    suspend fun markExpiredAsMissed(nowMs: Long = System.currentTimeMillis()): Int =
-        dao.markExpiredAsMissed(nowMs, (WINDOW_SECONDS + MARK_SECONDS) * 1000L)
+    suspend fun markExpiredAsMissed(
+        nowMs: Long = System.currentTimeMillis(),
+        markAfterSeconds: Int = MARK_SECONDS,
+    ): Int = dao.markExpiredAsMissed(nowMs, (WINDOW_SECONDS + markAfterSeconds) * 1000L)
 
     suspend fun delete(id: Long) = dao.delete(id)
     suspend fun clearAll() = dao.clear()

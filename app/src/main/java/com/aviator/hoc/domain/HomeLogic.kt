@@ -33,6 +33,8 @@ data class LiveSignal(
     val countdown: Long,
     val status: WindowStatus,
     val times: WindowTimes,
+    /** whole bet window left, open -> close (90 s .. 0 s), same number the hero card shows */
+    val windowLeft: Long = 0L,
 )
 
 data class MarkInfo(val signal: LiveSignal, val secondsLeft: Int)
@@ -62,7 +64,8 @@ private const val SEVEN_DAYS_SECONDS = 7L * 24 * 60 * 60
 fun SignalEntity.toLive(nowMs: Long, zone: ZoneId = ZoneId.systemDefault()): LiveSignal {
     val cd = countdownSeconds(targetMs, nowMs)
     val rt = hmsOfEpoch(targetMs, zone)
-    return LiveSignal(id, odd, targetMs, createdAt, rt, cd, windowStatus(cd), windowTimes(rt))
+    val left = ceil(max(0.0, -secondsSinceClose(targetMs, nowMs))).toLong()
+    return LiveSignal(id, odd, targetMs, createdAt, rt, cd, windowStatus(cd), windowTimes(rt), left)
 }
 
 /**
@@ -88,13 +91,18 @@ fun nearbyCount(current: LiveSignal, upcoming: List<LiveSignal>): Int =
     upcoming.count { it.id != current.id && abs(it.targetMs - current.targetMs) <= 120_000L }
 
 /** The pending signal WIN / LOSS should be offered for (closed-first if several overlap). */
-fun markInfo(list: List<SignalEntity>, nowMs: Long, zone: ZoneId = ZoneId.systemDefault()): MarkInfo? {
+fun markInfo(
+    list: List<SignalEntity>,
+    nowMs: Long,
+    zone: ZoneId = ZoneId.systemDefault(),
+    markAfterSeconds: Int = MARK_SECONDS,
+): MarkInfo? {
     val s = list
-        .filter { it.status == SignalStatus.PENDING && isInMarkWindow(it.targetMs, nowMs) }
+        .filter { it.status == SignalStatus.PENDING && isInMarkWindow(it.targetMs, nowMs, markAfterSeconds) }
         .maxByOrNull { secondsSinceClose(it.targetMs, nowMs) }
         ?: return null
-    val total = MARK_SECONDS + MARK_BEFORE_SECONDS
-    val left = ceil(MARK_SECONDS - secondsSinceClose(s.targetMs, nowMs)).toInt().coerceIn(0, total)
+    val total = markAfterSeconds + MARK_BEFORE_SECONDS
+    val left = ceil(markAfterSeconds - secondsSinceClose(s.targetMs, nowMs)).toInt().coerceIn(0, total)
     return MarkInfo(s.toLive(nowMs, zone), left)
 }
 
@@ -111,14 +119,19 @@ fun windowProgress(s: LiveSignal, nowMs: Long): Float {
     return ((secondsSinceClose(s.targetMs, nowMs) + full) / full).coerceIn(0.0, 1.0).toFloat()
 }
 
-fun buildHomeState(list: List<SignalEntity>, nowMs: Long, zone: ZoneId = ZoneId.systemDefault()): HomeUiState {
+fun buildHomeState(
+    list: List<SignalEntity>,
+    nowMs: Long,
+    zone: ZoneId = ZoneId.systemDefault(),
+    markAfterSeconds: Int = MARK_SECONDS,
+): HomeUiState {
     val upcoming = upcomingSignals(list, nowMs, zone)
     val current = currentSignal(upcoming)
     return HomeUiState(
         current = current,
         nearby = current?.let { nearbyCount(it, upcoming) } ?: 0,
         upcoming = upcoming,
-        mark = markInfo(list, nowMs, zone),
+        mark = markInfo(list, nowMs, zone, markAfterSeconds),
         stats = SignalRepository.statsOf(list, nowMs, zone),
         readoutSeconds = current?.let { heroReadoutSeconds(it, nowMs) } ?: 0L,
         progress = current?.let { windowProgress(it, nowMs) } ?: 0f,

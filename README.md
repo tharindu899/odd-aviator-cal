@@ -37,7 +37,7 @@
 |---|---|
 | 🧮 **Signal calculator** | Paste text like `2.02x 21:31:22` and get the exact signal time |
 | ⏱️ **Live hero countdown** | Big countdown, smooth flowing progress bar, 45 s bet window before / after the signal |
-| ✅ **Quick WIN / LOSS** | Buttons spring up 25 s before the window closes, leave 5 s after |
+| ✅ **Quick WIN / LOSS** | Buttons spring up 25 s before the window closes, leave 10 s after (adjustable in Settings) |
 | 🤖 **Auto-mark missed** | Unmarked signals become *Missed* automatically (optional) |
 | 🔔 **Notifications** | Sound alert about **1 minute before a signal**, even when the app is closed — tap to open |
 | 🔊 **Beeps & vibration** | In-app beep / buzz when the window opens and when WIN / LOSS appears |

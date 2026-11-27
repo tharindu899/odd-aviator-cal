@@ -4,16 +4,22 @@ import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.aviator.hoc.core.MARK_SECONDS
+import com.aviator.hoc.core.MARK_SECONDS_MAX
+import com.aviator.hoc.core.MARK_SECONDS_MIN
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 private val Context.dataStore by preferencesDataStore(name = "app_settings")
 
 data class AppSettings(
-    /** pending signals become "missed" 5 s after the window closes */
+    /** pending signals become "missed" a few seconds after the window closes */
     val autoMarkMissed: Boolean = true,
+    /** how many seconds after the window closes before auto-miss (and WIN / LOSS leave); default 10 */
+    val missedAfterSeconds: Int = MARK_SECONDS,
     /** live countdown timers on Home */
     val showCountdown: Boolean = true,
     /** beep when the window opens / closes */
@@ -45,6 +51,7 @@ fun cleanUserName(raw: String): String {
 class SettingsStore(private val context: Context) {
     private object Keys {
         val autoMark = booleanPreferencesKey("autoMarkMissed")
+        val missedAfter = intPreferencesKey("missedAfterSeconds")
         val countdown = booleanPreferencesKey("showCountdown")
         val sound = booleanPreferencesKey("sound")
         val haptics = booleanPreferencesKey("haptics")
@@ -57,6 +64,8 @@ class SettingsStore(private val context: Context) {
         val d = AppSettings()
         return AppSettings(
             autoMarkMissed = this[Keys.autoMark] ?: d.autoMarkMissed,
+            missedAfterSeconds = (this[Keys.missedAfter] ?: d.missedAfterSeconds)
+                .coerceIn(MARK_SECONDS_MIN, MARK_SECONDS_MAX),
             showCountdown = this[Keys.countdown] ?: d.showCountdown,
             sound = this[Keys.sound] ?: d.sound,
             haptics = this[Keys.haptics] ?: d.haptics,
@@ -72,6 +81,7 @@ class SettingsStore(private val context: Context) {
         context.dataStore.edit { p ->
             val next = transform(p.toSettings())
             p[Keys.autoMark] = next.autoMarkMissed
+            p[Keys.missedAfter] = next.missedAfterSeconds.coerceIn(MARK_SECONDS_MIN, MARK_SECONDS_MAX)
             p[Keys.countdown] = next.showCountdown
             p[Keys.sound] = next.sound
             p[Keys.haptics] = next.haptics

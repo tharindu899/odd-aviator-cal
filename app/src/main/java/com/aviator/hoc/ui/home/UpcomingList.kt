@@ -28,13 +28,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.aviator.hoc.core.WindowStatus
+import com.aviator.hoc.core.formatClock
 import com.aviator.hoc.core.formatCountdown
 import com.aviator.hoc.core.windowOpensInSeconds
 import com.aviator.hoc.domain.LiveSignal
 import com.aviator.hoc.ui.components.PressableSurface
 import com.aviator.hoc.ui.theme.Mint
 import java.util.Locale
-import kotlin.math.abs
 
 @Composable
 fun UpcomingList(
@@ -85,8 +85,8 @@ private fun countdownText(s: LiveSignal, showCountdown: Boolean): String = if (!
     }
 } else when (s.status) {
     WindowStatus.WAITING -> "-" + formatCountdown(windowOpensInSeconds(s.countdown))
-    WindowStatus.ACTIVE -> formatCountdown(s.countdown)
-    WindowStatus.GRACE -> "+" + formatCountdown(abs(s.countdown))
+    // bet window running: 45 s + 45 s counted as one 90 s (01:30 -> 00:00) countdown, same as the hero card
+    WindowStatus.ACTIVE, WindowStatus.GRACE -> formatClock(s.windowLeft)
     WindowStatus.CLOSED -> "--:--"
 }
 

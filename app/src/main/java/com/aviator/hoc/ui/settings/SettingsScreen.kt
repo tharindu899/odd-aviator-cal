@@ -67,6 +67,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.aviator.hoc.core.MARK_SECONDS_MAX
+import com.aviator.hoc.core.MARK_SECONDS_MIN
 import com.aviator.hoc.data.AppSettings
 import com.aviator.hoc.ui.components.AppIcons
 import com.aviator.hoc.ui.components.PressableSurface
@@ -82,6 +84,7 @@ fun SettingsScreen(
     saved: Boolean,
     onBack: () -> Unit,
     onAutoMark: (Boolean) -> Unit,
+    onMissedAfter: (Int) -> Unit,
     onCountdown: (Boolean) -> Unit,
     onTheme: (String) -> Unit,
     onNotify: (Boolean) -> Unit,
@@ -137,10 +140,11 @@ fun SettingsScreen(
                 SettingRow(
                     icon = AppIcons.Clock,
                     title = "Auto-mark missed",
-                    subtitle = "Pending signals become Missed 5 s after the window closes",
+                    subtitle = "Pending signals become Missed ${settings.missedAfterSeconds} s after the window closes",
                     checked = settings.autoMarkMissed,
                     onChange = onAutoMark,
                 )
+                MissedDelayPicker(settings.missedAfterSeconds, onMissedAfter)
                 SettingRow(
                     icon = AppIcons.Timer,
                     title = "Live countdown",
@@ -348,6 +352,70 @@ private fun ResetRow(onReset: () -> Unit) {
                         style = MaterialTheme.typography.labelLarge,
                         color = if (c) Mint.Black else Mint.PinkSoft,
                     )
+                }
+            }
+        }
+    }
+}
+
+/** Pick how many seconds after the window closes a pending signal is auto-marked Missed (also how long WIN / LOSS stay). */
+@Composable
+private fun MissedDelayPicker(seconds: Int, onChange: (Int) -> Unit) {
+    val haptic = LocalHapticFeedback.current
+    val presets = listOf(5, 10, 15, 30)
+
+    @Composable
+    fun StepButton(label: String, enabled: Boolean, onClick: () -> Unit) {
+        PressableSurface(
+            onClick = { if (enabled) { haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove); onClick() } },
+            shape = CircleShape,
+            color = Mint.Card,
+            border = BorderStroke(1.dp, Mint.Border2),
+            modifier = Modifier.size(44.dp),
+        ) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    label,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = if (enabled) Mint.Text else Mint.Muted.copy(alpha = 0.4f),
+                )
+            }
+        }
+    }
+
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = Mint.Card2,
+        border = BorderStroke(1.dp, Mint.Border),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text("Missed delay (seconds after close)", style = MaterialTheme.typography.labelSmall, color = Mint.Muted)
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                StepButton("−", seconds > MARK_SECONDS_MIN) { onChange(seconds - 1) }
+                Text("$seconds s", style = MaterialTheme.typography.headlineMedium, color = Mint.Lime)
+                StepButton("+", seconds < MARK_SECONDS_MAX) { onChange(seconds + 1) }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                presets.forEach { v ->
+                    val on = v == seconds
+                    val bg by animateColorAsState(if (on) Mint.Lime else Mint.Card, tween(250), label = "delayBg")
+                    val fg by animateColorAsState(if (on) Mint.Black else Mint.Muted, tween(250), label = "delayFg")
+                    PressableSurface(
+                        onClick = { onChange(v) },
+                        shape = RoundedCornerShape(14.dp),
+                        color = bg,
+                        border = BorderStroke(1.dp, if (on) Mint.Lime else Mint.Border2),
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Box(Modifier.fillMaxWidth().padding(vertical = 10.dp), contentAlignment = Alignment.Center) {
+                            Text("${v}s", style = MaterialTheme.typography.labelLarge, color = fg)
+                        }
+                    }
                 }
             }
         }

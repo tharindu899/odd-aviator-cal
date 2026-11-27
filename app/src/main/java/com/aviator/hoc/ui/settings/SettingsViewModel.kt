@@ -44,6 +44,7 @@ class SettingsViewModel(
     }
 
     fun setAutoMark(on: Boolean) = change { it.copy(autoMarkMissed = on) }
+    fun setMissedAfter(seconds: Int) = change { it.copy(missedAfterSeconds = seconds) }
     fun setCountdown(on: Boolean) = change { it.copy(showCountdown = on) }
     fun setHaptics(on: Boolean) = change { it.copy(haptics = on) }
     fun setTheme(mode: String) = change { it.copy(themeMode = mode) }

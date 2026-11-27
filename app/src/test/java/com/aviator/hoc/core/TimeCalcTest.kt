@@ -67,15 +67,23 @@ class TimeCalcTest {
         assertEquals(Hms(13, 57, 45), c.close)
     }
 
-    @Test fun markWindow_isClosePlus5_andClose_minus25() {
+    @Test fun markWindow_isClosePlus10_andClose_minus25() {
         val target = 1_000_000_000_000L
         val close = target + WINDOW_SECONDS * 1000L
         assertFalse(isInMarkWindow(target, close - 26_000))
         assertTrue(isInMarkWindow(target, close - 25_000))
-        assertTrue(isInMarkWindow(target, close + 4_999))
-        assertFalse(isInMarkWindow(target, close + 5_000))
-        assertTrue(isMarkWindowOver(target, close + 5_000))
-        assertFalse(isMarkWindowOver(target, close + 4_000))
+        assertTrue(isInMarkWindow(target, close + 9_999))
+        assertFalse(isInMarkWindow(target, close + 10_000))
+        assertTrue(isMarkWindowOver(target, close + 10_000))
+        assertFalse(isMarkWindowOver(target, close + 9_000))
+    }
+
+    @Test fun markWindow_followsCustomDelay() {
+        val target = 1_000_000_000_000L
+        val close = target + WINDOW_SECONDS * 1000L
+        assertTrue(isInMarkWindow(target, close + 19_999, markAfterSeconds = 20))
+        assertFalse(isInMarkWindow(target, close + 20_000, markAfterSeconds = 20))
+        assertTrue(isMarkWindowOver(target, close + 3_000, markAfterSeconds = 3))
     }
 
     @Test fun countdown_floorsLikeJs() {

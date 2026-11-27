@@ -16,8 +16,12 @@ import kotlin.math.floor
 /** Bet window = 45 s before the signal time to 45 s after it. */
 const val WINDOW_SECONDS = 45
 
-/** After the window closes, WIN / LOSS stay available for this many seconds. */
-const val MARK_SECONDS = 5
+/** Default: after the window closes, WIN / LOSS stay available for this many seconds (then auto-miss). */
+const val MARK_SECONDS = 10
+
+/** Allowed range for the user-chosen auto-miss delay (Settings). */
+const val MARK_SECONDS_MIN = 1
+const val MARK_SECONDS_MAX = 60
 
 /** WIN / LOSS appear this many seconds BEFORE the window closes. */
 const val MARK_BEFORE_SECONDS = 25
@@ -105,14 +109,14 @@ fun countdownSeconds(targetMs: Long, nowMs: Long): Long = Math.floorDiv(targetMs
 fun secondsSinceClose(targetMs: Long, nowMs: Long): Double =
     (nowMs - targetMs) / 1000.0 - WINDOW_SECONDS
 
-fun isInMarkWindow(targetMs: Long, nowMs: Long): Boolean {
+fun isInMarkWindow(targetMs: Long, nowMs: Long, markAfterSeconds: Int = MARK_SECONDS): Boolean {
     val s = secondsSinceClose(targetMs, nowMs)
-    return s >= -MARK_BEFORE_SECONDS && s < MARK_SECONDS
+    return s >= -MARK_BEFORE_SECONDS && s < markAfterSeconds
 }
 
 /** Mark window finished: a still-pending signal now counts as MISSED. */
-fun isMarkWindowOver(targetMs: Long, nowMs: Long): Boolean =
-    secondsSinceClose(targetMs, nowMs) >= MARK_SECONDS
+fun isMarkWindowOver(targetMs: Long, nowMs: Long, markAfterSeconds: Int = MARK_SECONDS): Boolean =
+    secondsSinceClose(targetMs, nowMs) >= markAfterSeconds
 
 fun windowStatus(countdown: Long): WindowStatus = when {
     countdown > WINDOW_SECONDS -> WindowStatus.WAITING

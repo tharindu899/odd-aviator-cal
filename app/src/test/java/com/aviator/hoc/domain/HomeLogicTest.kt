@@ -60,16 +60,31 @@ class HomeLogicTest {
         assertEquals(1, nearbyCount(cur, up))
     }
 
-    @Test fun markInfo_appearsFrom25sBeforeClose_untilClosePlus5() {
+    @Test fun markInfo_appearsFrom25sBeforeClose_untilClosePlus10() {
         // closes at target + 45 s
         val early = markInfo(listOf(sig(1, 20)), now, zone)      // close in 65 s -> too early
         assertNull(early)
         val open = markInfo(listOf(sig(1, -20)), now, zone)      // close in 25 s -> shown
         assertNotNull(open)
-        assertEquals(30, open!!.secondsLeft)
-        val after = markInfo(listOf(sig(1, -48)), now, zone)     // closed 3 s ago -> 2 s left
-        assertEquals(2, after!!.secondsLeft)
-        assertNull(markInfo(listOf(sig(1, -51)), now, zone))     // closed 6 s ago -> over
+        assertEquals(35, open!!.secondsLeft)   // 25 s before close + 10 s after
+        val after = markInfo(listOf(sig(1, -48)), now, zone)     // closed 3 s ago -> 7 s left
+        assertEquals(7, after!!.secondsLeft)
+        assertNull(markInfo(listOf(sig(1, -56)), now, zone))     // closed 11 s ago -> over
+    }
+
+    @Test fun markInfo_usesCustomDelay() {
+        val m = markInfo(listOf(sig(1, -48)), now, zone, markAfterSeconds = 30)   // closed 3 s ago -> 27 s left
+        assertEquals(27, m!!.secondsLeft)
+        assertNull(markInfo(listOf(sig(1, -48)), now, zone, markAfterSeconds = 3)) // 3 s delay already over
+    }
+
+    @Test fun windowLeft_isWholeNinetySecondWindow() {
+        val opening = upcomingSignals(listOf(sig(1, 45)), now, zone).first()
+        assertEquals(90L, opening.windowLeft)                       // 45 + 45 = 90 s = 1:30
+        val mid = upcomingSignals(listOf(sig(2, 0)), now, zone).first()
+        assertEquals(45L, mid.windowLeft)
+        val grace = upcomingSignals(listOf(sig(3, -30)), now, zone).first()
+        assertEquals(15L, grace.windowLeft)
     }
 
     @Test fun markInfo_ignoresNonPending() {

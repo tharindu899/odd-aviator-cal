@@ -23,7 +23,7 @@ interface SignalDao {
     @Query("UPDATE signals SET status = :status, autoMarked = :auto, updatedAt = :now WHERE id = :id")
     suspend fun setStatus(id: Long, status: String, auto: Boolean, now: Long)
 
-    /** Pending signals whose WIN/LOSS window is over: targetMs + 45s + 5s <= now */
+    /** Pending signals whose WIN/LOSS window is over: targetMs + 45s + <auto-miss delay> <= now */
     @Query(
         "UPDATE signals SET status = 'missed', autoMarked = 1, updatedAt = :now " +
             "WHERE status = 'pending' AND targetMs + :graceMs <= :now"

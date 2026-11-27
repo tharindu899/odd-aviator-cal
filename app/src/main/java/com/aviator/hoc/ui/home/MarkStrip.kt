@@ -36,7 +36,7 @@ import java.util.Locale
 
 private class LastMark { var value: MarkInfo? = null }
 
-/** WIN / LOSS bar: springs up 25 s before the window closes, leaves 5 s after. */
+/** WIN / LOSS bar: springs up 25 s before the window closes, leaves N s after (Settings, default 10). */
 @Composable
 fun MarkStrip(
     mark: MarkInfo?,

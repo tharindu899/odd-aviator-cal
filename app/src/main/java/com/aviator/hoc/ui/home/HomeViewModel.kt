@@ -14,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -38,7 +39,11 @@ class HomeViewModel(
     }
 
     val state: StateFlow<HomeUiState> =
-        combine(repository.signals, ticker) { list, now -> buildHomeState(list, now) }
+        combine(
+            repository.signals,
+            ticker,
+            settings.settings.map { it.missedAfterSeconds }.distinctUntilChanged(),
+        ) { list, now, missedAfter -> buildHomeState(list, now, markAfterSeconds = missedAfter) }
             .flowOn(Dispatchers.Default)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState.Empty)
 
@@ -58,10 +63,11 @@ class HomeViewModel(
                 events.forEach { alerts.play(it, cfg.sound, cfg.haptics) }
             }
         }
-        // auto-mark: a pending signal becomes "missed" 5 s after its window closes
+        // auto-mark: a pending signal becomes "missed" N s after its window closes (N set in Settings, default 10)
         viewModelScope.launch {
             while (true) {
-                if (settings.settings.first().autoMarkMissed) repository.markExpiredAsMissed()
+                val cfg = settings.settings.first()
+                if (cfg.autoMarkMissed) repository.markExpiredAsMissed(markAfterSeconds = cfg.missedAfterSeconds)
                 delay(3_000)
             }
         }
