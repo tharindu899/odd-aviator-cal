@@ -80,7 +80,7 @@ cd aviator-hoc-android
 git init -b main
 git add .
 git commit -m "Initial commit"
-git remote add origin https://github.com/<you>/<repo>.git
+git remote add origin https://github.com/tharindu899/odd-aviator-cal.git
 git push -u origin main
 ```
 
