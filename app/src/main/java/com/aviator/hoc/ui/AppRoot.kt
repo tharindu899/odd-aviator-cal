@@ -1,6 +1,16 @@
 package com.aviator.hoc.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,7 +43,8 @@ import com.aviator.hoc.ui.home.HomeViewModel
 import com.aviator.hoc.ui.home.MarkStrip
 import com.aviator.hoc.ui.results.ResultsScreen
 import com.aviator.hoc.ui.results.ResultsViewModel
-import com.aviator.hoc.ui.settings.SettingsSheet
+import com.aviator.hoc.ui.settings.SettingsScreen
+import com.aviator.hoc.ui.update.UpdateDialog
 import com.aviator.hoc.ui.settings.SettingsViewModel
 import com.aviator.hoc.update.UpdateState
 import com.aviator.hoc.update.UpdateViewModel
@@ -60,8 +71,19 @@ fun AppRoot(
     // room at the bottom of every screen for nav (70dp) + strip (~72dp) + margins
     val bottomSpace = 170.dp
 
+    val dialogVisible by updateViewModel.dialogVisible.collectAsStateWithLifecycle()
+
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
         Box(Modifier.fillMaxSize()) {
+            // main content recedes slightly while the settings page is on top
+            val receded by animateFloatAsState(if (showSettings) 1f else 0f, tween(380), label = "recede")
+            Box(
+                Modifier.fillMaxSize().graphicsLayer {
+                    val sc = 1f - 0.05f * receded
+                    scaleX = sc; scaleY = sc
+                    alpha = 1f - 0.5f * receded
+                },
+            ) {
             Crossfade(targetState = tab, animationSpec = tween(160), label = "tab") { t ->
                 val firstVisit = remember { (visited and (1 shl t.ordinal)) == 0 }
                 CompositionLocalProvider(LocalPlayEntrance provides firstVisit) {
@@ -80,23 +102,18 @@ fun AppRoot(
                     }
                 }
             }
-
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .navigationBarsPadding()
-                    .padding(horizontal = 18.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                MarkOverlay(viewModel, settings.haptics)
-                BottomNav(selected = tab, onSelect = { tabIndex = it.ordinal })
             }
 
-            if (showSettings) {
-                SettingsSheet(
+            // Settings: a full page that slides in from the right
+            AnimatedVisibility(
+                visible = showSettings,
+                enter = slideInHorizontally(tween(380, easing = FastOutSlowInEasing)) { it } + fadeIn(tween(250)),
+                exit = slideOutHorizontally(tween(320, easing = FastOutSlowInEasing)) { it } + fadeOut(tween(250)),
+            ) {
+                SettingsScreen(
                     settings = settings,
                     saved = saved,
-                    onDismiss = { showSettings = false },
+                    onBack = { showSettings = false },
                     onAutoMark = settingsViewModel::setAutoMark,
                     onCountdown = settingsViewModel::setCountdown,
                     onTheme = settingsViewModel::setTheme,
@@ -111,7 +128,34 @@ fun AppRoot(
                     update = update,
                     appVersion = updateViewModel.currentVersion,
                     onCheckUpdate = { updateViewModel.check() },
-                    onInstallUpdate = updateViewModel::install,
+                    onOpenUpdate = updateViewModel::showDialog,
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
+                    .padding(horizontal = 18.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                MarkOverlay(viewModel, settings.haptics)
+                AnimatedVisibility(
+                    visible = !showSettings,
+                    enter = slideInVertically(tween(300)) { it } + fadeIn(tween(250)),
+                    exit = slideOutVertically(tween(250)) { it } + fadeOut(tween(200)),
+                ) {
+                    BottomNav(selected = tab, onSelect = { tabIndex = it.ordinal })
+                }
+            }
+
+
+            if (dialogVisible && update !is UpdateState.Idle && update !is UpdateState.UpToDate && update !is UpdateState.Checking) {
+                UpdateDialog(
+                    state = update,
+                    onInstall = updateViewModel::install,
+                    onCancel = updateViewModel::cancelDownload,
+                    onClose = updateViewModel::dismissDialog,
                 )
             }
         }

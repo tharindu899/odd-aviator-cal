@@ -21,6 +21,7 @@ private fun stroke(name: String, path: String, width: Float = 2.2f): ImageVector
         .build()
 
 object AppIcons {
+    val Back = stroke("back", "M15 5l-7 7 7 7", 2.4f)
     val Home = stroke("home", "M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z")
     val Bolt = stroke("bolt", "M13 2L4 14h7l-1 8 9-12h-7z")
     val Clock = stroke("clock", "M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z")

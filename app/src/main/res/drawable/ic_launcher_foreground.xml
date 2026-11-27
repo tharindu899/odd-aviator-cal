@@ -1,10 +1,69 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- plain lightning bolt, no brand artwork -->
+
+    <!-- faint full ring (the "track") -->
     <path
-        android:fillColor="#B6FF5C"
-        android:pathData="M60,22 L38,56 L52,56 L48,86 L72,50 L57,50 Z" />
+        android:pathData="M54,28 A26,26 0 1 1 53.99,28"
+        android:strokeColor="#33B6FF5C"
+        android:strokeWidth="6"
+        android:fillColor="#00000000" />
+
+    <!-- soft glow under the progress arc -->
+    <path
+        android:pathData="M54,28 A26,26 0 1 1 28,54"
+        android:strokeColor="#2EB6FF5C"
+        android:strokeWidth="13"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+
+    <!-- progress arc: 270 degrees, lime gradient -->
+    <path
+        android:pathData="M54,28 A26,26 0 1 1 28,54"
+        android:strokeWidth="6.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:type="linear"
+                android:startX="28"
+                android:startY="28"
+                android:endX="80"
+                android:endY="80">
+                <item android:offset="0" android:color="#FFE4FFA8" />
+                <item android:offset="0.5" android:color="#FFB6FF5C" />
+                <item android:offset="1" android:color="#FF6FD01F" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- bright head of the arc -->
+    <path
+        android:fillColor="#FFF4FFD6"
+        android:pathData="M28,54m-4.2,0a4.2,4.2 0 1 1 8.4,0a4.2,4.2 0 1 1 -8.4,0" />
+
+    <!-- lightning bolt in the middle -->
+    <group
+        android:scaleX="1.45"
+        android:scaleY="1.45"
+        android:translateX="37.3"
+        android:translateY="36.6">
+        <path
+            android:pathData="M13,2L4,14h7l-1,8 9,-12h-7z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:type="linear"
+                    android:startX="12"
+                    android:startY="2"
+                    android:endX="12"
+                    android:endY="22">
+                    <item android:offset="0" android:color="#FFF4FFD6" />
+                    <item android:offset="1" android:color="#FFB6FF5C" />
+                </gradient>
+            </aapt:attr>
+        </path>
+    </group>
 </vector>
