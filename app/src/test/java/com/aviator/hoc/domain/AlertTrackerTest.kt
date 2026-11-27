@@ -21,7 +21,7 @@ class AlertTrackerTest {
     @Test
     fun firstStateNeverFires() {
         val t = AlertTracker()
-        assertEquals(emptyList(), t.onState(state(live(1, WindowStatus.ACTIVE))))
+        assertEquals(emptyList<AlertEvent>(), t.onState(state(live(1, WindowStatus.ACTIVE))))
     }
 
     @Test
@@ -29,8 +29,8 @@ class AlertTrackerTest {
         val t = AlertTracker()
         t.onState(state(live(1, WindowStatus.WAITING)))
         assertEquals(listOf(AlertEvent.WINDOW_OPEN), t.onState(state(live(1, WindowStatus.ACTIVE))))
-        assertEquals(emptyList(), t.onState(state(live(1, WindowStatus.ACTIVE))))
-        assertEquals(emptyList(), t.onState(state(live(1, WindowStatus.GRACE))))
+        assertEquals(emptyList<AlertEvent>(), t.onState(state(live(1, WindowStatus.ACTIVE))))
+        assertEquals(emptyList<AlertEvent>(), t.onState(state(live(1, WindowStatus.GRACE))))
         t.onState(state(live(2, WindowStatus.WAITING)))
         assertEquals(listOf(AlertEvent.WINDOW_OPEN), t.onState(state(live(2, WindowStatus.ACTIVE))))
     }
@@ -41,8 +41,8 @@ class AlertTrackerTest {
         val s = live(1, WindowStatus.GRACE)
         t.onState(state(s))
         assertEquals(listOf(AlertEvent.MARK_OPEN), t.onState(state(s, MarkInfo(s, 20))))
-        assertEquals(emptyList(), t.onState(state(s, MarkInfo(s, 19))))
+        assertEquals(emptyList<AlertEvent>(), t.onState(state(s, MarkInfo(s, 19))))
         t.onState(state(null))
-        assertEquals(emptyList(), t.onState(state(s, MarkInfo(s, 3))))
+        assertEquals(emptyList<AlertEvent>(), t.onState(state(s, MarkInfo(s, 3))))
     }
 }
