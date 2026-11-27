@@ -144,7 +144,13 @@ fun SettingsScreen(
                     checked = settings.autoMarkMissed,
                     onChange = onAutoMark,
                 )
-                MissedDelayPicker(settings.missedAfterSeconds, onMissedAfter)
+                AnimatedVisibility(
+                    visible = settings.autoMarkMissed,
+                    enter = fadeIn(tween(200)) + slideInVertically(tween(250)) { -it / 3 },
+                    exit = fadeOut(tween(150)) + slideOutVertically(tween(200)) { -it / 3 },
+                ) {
+                    MissedDelayPicker(settings.missedAfterSeconds, onMissedAfter)
+                }
                 SettingRow(
                     icon = AppIcons.Timer,
                     title = "Live countdown",
@@ -358,11 +364,10 @@ private fun ResetRow(onReset: () -> Unit) {
     }
 }
 
-/** Pick how many seconds after the window closes a pending signal is auto-marked Missed (also how long WIN / LOSS stay). */
+/** − / + stepper (1–20 s): seconds after the window closes before a pending signal is auto-marked Missed. Only shown while Auto-mark missed is on. */
 @Composable
 private fun MissedDelayPicker(seconds: Int, onChange: (Int) -> Unit) {
     val haptic = LocalHapticFeedback.current
-    val presets = listOf(5, 10, 15, 30)
 
     @Composable
     fun StepButton(label: String, enabled: Boolean, onClick: () -> Unit) {
@@ -399,24 +404,6 @@ private fun MissedDelayPicker(seconds: Int, onChange: (Int) -> Unit) {
                 StepButton("−", seconds > MARK_SECONDS_MIN) { onChange(seconds - 1) }
                 Text("$seconds s", style = MaterialTheme.typography.headlineMedium, color = Mint.Lime)
                 StepButton("+", seconds < MARK_SECONDS_MAX) { onChange(seconds + 1) }
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                presets.forEach { v ->
-                    val on = v == seconds
-                    val bg by animateColorAsState(if (on) Mint.Lime else Mint.Card, tween(250), label = "delayBg")
-                    val fg by animateColorAsState(if (on) Mint.Black else Mint.Muted, tween(250), label = "delayFg")
-                    PressableSurface(
-                        onClick = { onChange(v) },
-                        shape = RoundedCornerShape(14.dp),
-                        color = bg,
-                        border = BorderStroke(1.dp, if (on) Mint.Lime else Mint.Border2),
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        Box(Modifier.fillMaxWidth().padding(vertical = 10.dp), contentAlignment = Alignment.Center) {
-                            Text("${v}s", style = MaterialTheme.typography.labelLarge, color = fg)
-                        }
-                    }
-                }
             }
         }
     }

@@ -73,8 +73,8 @@ class HomeLogicTest {
     }
 
     @Test fun markInfo_usesCustomDelay() {
-        val m = markInfo(listOf(sig(1, -48)), now, zone, markAfterSeconds = 30)   // closed 3 s ago -> 27 s left
-        assertEquals(27, m!!.secondsLeft)
+        val m = markInfo(listOf(sig(1, -48)), now, zone, markAfterSeconds = 20)   // closed 3 s ago -> 17 s left
+        assertEquals(17, m!!.secondsLeft)
         assertNull(markInfo(listOf(sig(1, -48)), now, zone, markAfterSeconds = 3)) // 3 s delay already over
     }
 

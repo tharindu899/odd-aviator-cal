@@ -21,7 +21,7 @@ const val MARK_SECONDS = 10
 
 /** Allowed range for the user-chosen auto-miss delay (Settings). */
 const val MARK_SECONDS_MIN = 1
-const val MARK_SECONDS_MAX = 60
+const val MARK_SECONDS_MAX = 20
 
 /** WIN / LOSS appear this many seconds BEFORE the window closes. */
 const val MARK_BEFORE_SECONDS = 25
