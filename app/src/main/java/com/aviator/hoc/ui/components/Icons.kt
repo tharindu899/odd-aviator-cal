@@ -28,5 +28,8 @@ object AppIcons {
     val Check = stroke("check", "M5 13l4 4L19 7", 2.6f)
     val Close = stroke("close", "M6 6l12 12M18 6L6 18", 2.6f)
     val Layers = stroke("layers", "M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5", 2f)
+    val Clipboard = stroke("clipboard", "M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1zM8 6H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-2", 2f)
+    val Alert = stroke("alert", "M12 8v5M12 16v.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z", 2f)
+    val Play = stroke("play", "M7 4l13 8-13 8z", 2f)
     val Timer = stroke("timer", "M12 8v5l3 2M9 2h6M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16z", 2f)
 }

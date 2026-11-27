@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.aviator.hoc.ui.AppRoot
+import com.aviator.hoc.ui.generate.GenerateViewModel
 import com.aviator.hoc.ui.home.HomeViewModel
 import com.aviator.hoc.ui.theme.AviatorTheme
 
@@ -29,7 +30,12 @@ class MainActivity : ComponentActivity() {
                         initializer { HomeViewModel(app.repository, app.settings) }
                     },
                 )
-                AppRoot(viewModel = vm, repository = app.repository)
+                val gen: GenerateViewModel = viewModel(
+                    factory = viewModelFactory {
+                        initializer { GenerateViewModel(app.repository) }
+                    },
+                )
+                AppRoot(viewModel = vm, generateViewModel = gen)
             }
         }
     }

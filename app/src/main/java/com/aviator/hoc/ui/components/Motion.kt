@@ -60,6 +60,7 @@ fun PressableSurface(
     color: Color,
     border: BorderStroke? = null,
     pressedScale: Float = 0.92f,
+    enabled: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     val source = remember { MutableInteractionSource() }
@@ -71,6 +72,7 @@ fun PressableSurface(
     )
     Surface(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier.graphicsLayer { scaleX = scale; scaleY = scale },
         shape = shape,
         color = color,

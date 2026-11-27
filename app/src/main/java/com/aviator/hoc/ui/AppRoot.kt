@@ -19,18 +19,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.aviator.hoc.data.SignalRepository
 import com.aviator.hoc.ui.components.BottomNav
 import com.aviator.hoc.ui.components.Tab
+import com.aviator.hoc.ui.generate.GenerateScreen
+import com.aviator.hoc.ui.generate.GenerateViewModel
 import com.aviator.hoc.ui.home.HomeScreen
 import com.aviator.hoc.ui.home.HomeViewModel
 import com.aviator.hoc.ui.home.MarkStrip
 import com.aviator.hoc.ui.placeholder.ComingSoonScreen
-import com.aviator.hoc.ui.theme.Mint
 
 @Composable
-fun AppRoot(viewModel: HomeViewModel, repository: SignalRepository) {
+fun AppRoot(viewModel: HomeViewModel, generateViewModel: GenerateViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val genState by generateViewModel.state.collectAsStateWithLifecycle()
     var tabIndex by rememberSaveable { mutableStateOf(0) }
     val tab = Tab.entries[tabIndex]
 
@@ -48,7 +49,14 @@ fun AppRoot(viewModel: HomeViewModel, repository: SignalRepository) {
                         onSettings = { /* Part 5 */ },
                         bottomPadding = bottomSpace,
                     )
-                    Tab.Generate -> ComingSoonScreen("Generate", part = 3, repository = repository)
+                    Tab.Generate -> GenerateScreen(
+                        state = genState,
+                        onInput = generateViewModel::onInput,
+                        onPasted = generateViewModel::onPasted,
+                        onClipboardEmpty = generateViewModel::onClipboardEmpty,
+                        onSubmit = generateViewModel::submit,
+                        bottomPadding = bottomSpace,
+                    )
                     Tab.Results -> ComingSoonScreen("Results", part = 4)
                 }
             }
