@@ -13,8 +13,13 @@ android {
         applicationId = "com.aviator.hoc"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "3.0.0"
+        // CI sets VERSION_CODE = the workflow run number, so every build is newer than the last
+        val code = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
+        versionCode = code
+        versionName = "3.0.$code"
+        // GitHub repo the in-app updater reads releases from (CI passes the real one)
+        val repo = System.getenv("UPDATE_REPO") ?: "tharindu899/odd-aviator-cal"
+        buildConfigField("String", "UPDATE_REPO", "\"$repo\"")
     }
 
     signingConfigs {
@@ -48,7 +53,10 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
 
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
 
     packaging {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"

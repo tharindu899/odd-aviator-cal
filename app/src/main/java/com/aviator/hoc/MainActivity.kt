@@ -3,7 +3,15 @@ package com.aviator.hoc
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import android.graphics.Color
 import android.os.Bundle
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aviator.hoc.data.AppSettings
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.activity.ComponentActivity
@@ -19,20 +27,16 @@ import com.aviator.hoc.ui.home.HomeViewModel
 import com.aviator.hoc.ui.results.ResultsViewModel
 import com.aviator.hoc.ui.settings.SettingsViewModel
 import com.aviator.hoc.ui.theme.AviatorTheme
+import com.aviator.hoc.update.UpdateViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
-        )
-
         val app = application as AviatorApp
 
         // Android 13+: ask for notification permission (once on first launch, and again when the user turns it on)
         val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
-        val askPermission = {
+        val askPermission: () -> Unit = {
             if (Build.VERSION.SDK_INT >= 33 &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
                 PackageManager.PERMISSION_GRANTED
@@ -46,8 +50,27 @@ class MainActivity : ComponentActivity() {
             askPermission()
         }
 
+        // read once up front so the very first frame already has the saved theme (no flash)
+        val initial = runBlocking { app.settings.settings.first() }
+
         setContent {
-            AviatorTheme {
+            val cfg by app.settings.settings.collectAsStateWithLifecycle(initial)
+            val systemDark = isSystemInDarkTheme()
+            val dark = when (cfg.themeMode) {
+                AppSettings.THEME_LIGHT -> false
+                AppSettings.THEME_DARK -> true
+                else -> systemDark
+            }
+            DisposableEffect(dark) {
+                this@MainActivity.enableEdgeToEdge(
+                    statusBarStyle = if (dark) SystemBarStyle.dark(Color.TRANSPARENT)
+                    else SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+                    navigationBarStyle = if (dark) SystemBarStyle.dark(Color.TRANSPARENT)
+                    else SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+                )
+                onDispose { }
+            }
+            AviatorTheme(dark = dark) {
                 val vm: HomeViewModel = viewModel(
                     factory = viewModelFactory {
                         initializer { HomeViewModel(app.repository, app.settings, app.alerts) }
@@ -68,11 +91,17 @@ class MainActivity : ComponentActivity() {
                         initializer { SettingsViewModel(app.settings, app.alerts) }
                     },
                 )
+                val updateVm: UpdateViewModel = viewModel(
+                    factory = viewModelFactory {
+                        initializer { UpdateViewModel(app) }
+                    },
+                )
                 AppRoot(
                     viewModel = vm,
                     generateViewModel = gen,
                     resultsViewModel = results,
                     settingsViewModel = settingsVm,
+                    updateViewModel = updateVm,
                     onRequestNotificationPermission = askPermission,
                 )
             }

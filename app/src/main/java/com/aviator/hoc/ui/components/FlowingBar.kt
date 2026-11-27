@@ -33,7 +33,7 @@ fun FlowingBar(
     accent: Color = Mint.Lime,
     accent2: Color = Mint.Lime2,
     modifier: Modifier = Modifier,
-    trackColor: Color = Color(0xFF1A1A1A),
+    trackColor: Color = Mint.Track,
 ) {
     val animated by animateFloatAsState(
         targetValue = progress.coerceIn(0f, 1f),

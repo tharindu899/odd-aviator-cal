@@ -20,6 +20,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import kotlinx.coroutines.delay
 
+/** false once a tab has been shown before: its content then appears instantly (tab switches stay smooth). */
+val LocalPlayEntrance = compositionLocalOf { true }
+
 /** Staggered entrance: fades + slides up after [delayMs]. Use inside a Column. */
 @Composable
 fun ColumnScope.RiseIn(
@@ -39,10 +43,13 @@ fun ColumnScope.RiseIn(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    var shown by remember { mutableStateOf(false) }
+    val play = LocalPlayEntrance.current
+    var shown by remember { mutableStateOf(!play) }
     LaunchedEffect(Unit) {
-        delay(delayMs.toLong())
-        shown = true
+        if (!shown) {
+            delay(delayMs.toLong())
+            shown = true
+        }
     }
     AnimatedVisibility(
         visible = shown,

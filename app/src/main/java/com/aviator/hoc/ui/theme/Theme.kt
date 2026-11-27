@@ -4,31 +4,37 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
-private val MintScheme = darkColorScheme(
-    primary = Mint.Lime,
-    onPrimary = Mint.Black,
-    primaryContainer = Mint.LimeChip,
-    onPrimaryContainer = Mint.Lime,
-    secondary = Mint.Amber,
-    onSecondary = Mint.Black,
-    tertiary = Mint.Pink,
-    onTertiary = Mint.Black,
-    background = Mint.Black,
-    onBackground = Mint.Text,
-    surface = Mint.Card,
-    onSurface = Mint.Text,
-    surfaceVariant = Mint.Card2,
-    onSurfaceVariant = Mint.Muted,
-    outline = Mint.Border2,
-    outlineVariant = Mint.Border,
-    error = Mint.Pink,
-    onError = Mint.Black,
-)
+private fun schemeOf(p: MintPalette) = if (p.isDark) {
+    darkColorScheme(
+        primary = p.lime, onPrimary = p.onAccent,
+        primaryContainer = p.limeChip, onPrimaryContainer = p.lime,
+        secondary = p.amber, onSecondary = p.onAccent,
+        tertiary = p.pink, onTertiary = p.onAccent,
+        background = p.bg, onBackground = p.text,
+        surface = p.card, onSurface = p.text,
+        surfaceVariant = p.card2, onSurfaceVariant = p.muted,
+        outline = p.border2, outlineVariant = p.border,
+        error = p.pink, onError = p.onAccent,
+    )
+} else {
+    lightColorScheme(
+        primary = p.lime, onPrimary = p.onAccent,
+        primaryContainer = p.limeChip, onPrimaryContainer = p.lime,
+        secondary = p.amber, onSecondary = p.onAccent,
+        tertiary = p.pink, onTertiary = p.onAccent,
+        background = p.bg, onBackground = p.text,
+        surface = p.card, onSurface = p.text,
+        surfaceVariant = p.card2, onSurfaceVariant = p.muted,
+        outline = p.border2, outlineVariant = p.border,
+        error = p.pink, onError = p.onAccent,
+    )
+}
 
 private val AviatorShapes = Shapes(
     extraSmall = RoundedCornerShape(8.dp),
@@ -39,11 +45,14 @@ private val AviatorShapes = Shapes(
 )
 
 @Composable
-fun AviatorTheme(content: @Composable () -> Unit) {
+fun AviatorTheme(dark: Boolean = true, content: @Composable () -> Unit) {
     val context = LocalContext.current
     val typography = remember { aviatorTypography(loadDisplayFont(context)) }
+    val palette = if (dark) DarkPalette else LightPalette
+    // set before any child reads it, so the first frame already has the right colours
+    if (Mint.palette !== palette) Mint.palette = palette
     MaterialTheme(
-        colorScheme = MintScheme,
+        colorScheme = remember(dark) { schemeOf(palette) },
         typography = typography,
         shapes = AviatorShapes,
         content = content,

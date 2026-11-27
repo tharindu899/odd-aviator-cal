@@ -68,6 +68,7 @@ import com.aviator.hoc.data.AppSettings
 import com.aviator.hoc.ui.components.AppIcons
 import com.aviator.hoc.ui.components.PressableSurface
 import com.aviator.hoc.ui.theme.Mint
+import com.aviator.hoc.update.UpdateState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -79,11 +80,16 @@ fun SettingsSheet(
     onDismiss: () -> Unit,
     onAutoMark: (Boolean) -> Unit,
     onCountdown: (Boolean) -> Unit,
+    onTheme: (String) -> Unit,
     onNotify: (Boolean) -> Unit,
     onSound: (Boolean) -> Unit,
     onHaptics: (Boolean) -> Unit,
     onName: (String) -> Unit,
     onReset: () -> Unit,
+    update: UpdateState,
+    appVersion: String,
+    onCheckUpdate: () -> Unit,
+    onInstallUpdate: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
@@ -120,6 +126,8 @@ fun SettingsSheet(
 
             NameField(settings.userName, onName)
 
+            ThemePicker(settings.themeMode, onTheme)
+
             SettingRow(
                 icon = AppIcons.Clock,
                 title = "Auto-mark missed",
@@ -155,6 +163,8 @@ fun SettingsSheet(
                 checked = settings.haptics,
                 onChange = onHaptics,
             )
+
+            UpdateCard(update, appVersion, onCheckUpdate, onInstallUpdate)
 
             ResetRow(onReset)
 
@@ -344,6 +354,43 @@ private fun ResetRow(onReset: () -> Unit) {
                         style = MaterialTheme.typography.labelLarge,
                         color = if (c) Mint.Black else Mint.PinkSoft,
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ThemePicker(mode: String, onChange: (String) -> Unit) {
+    val options = listOf(
+        AppSettings.THEME_SYSTEM to "Auto",
+        AppSettings.THEME_LIGHT to "Day",
+        AppSettings.THEME_DARK to "Night",
+    )
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = Mint.Card2,
+        border = BorderStroke(1.dp, Mint.Border),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text("Theme", style = MaterialTheme.typography.labelSmall, color = Mint.Muted)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                options.forEach { (value, label) ->
+                    val on = value == mode
+                    val bg by animateColorAsState(if (on) Mint.Lime else Mint.Card, tween(250), label = "themeBg")
+                    val fg by animateColorAsState(if (on) Mint.Black else Mint.Muted, tween(250), label = "themeFg")
+                    PressableSurface(
+                        onClick = { onChange(value) },
+                        shape = RoundedCornerShape(14.dp),
+                        color = bg,
+                        border = BorderStroke(1.dp, if (on) Mint.Lime else Mint.Border2),
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Box(Modifier.fillMaxWidth().padding(vertical = 11.dp), contentAlignment = Alignment.Center) {
+                            Text(label, style = MaterialTheme.typography.labelLarge, color = fg)
+                        }
+                    }
                 }
             }
         }

@@ -22,10 +22,15 @@ data class AppSettings(
     val haptics: Boolean = true,
     /** system notification ~1 min before a signal (works with the app closed) */
     val notify: Boolean = true,
+    /** "system" | "light" | "dark" */
+    val themeMode: String = THEME_SYSTEM,
     /** shown in "Hello, <name>" */
     val userName: String = DEFAULT_NAME,
 ) {
     companion object {
+        const val THEME_SYSTEM = "system"
+        const val THEME_LIGHT = "light"
+        const val THEME_DARK = "dark"
         const val DEFAULT_NAME = "Lalshan"
         const val MAX_NAME = 24
     }
@@ -45,6 +50,7 @@ class SettingsStore(private val context: Context) {
         val haptics = booleanPreferencesKey("haptics")
         val notify = booleanPreferencesKey("notify")
         val userName = stringPreferencesKey("userName")
+        val theme = stringPreferencesKey("themeMode")
     }
 
     private fun Preferences.toSettings(): AppSettings {
@@ -56,6 +62,7 @@ class SettingsStore(private val context: Context) {
             haptics = this[Keys.haptics] ?: d.haptics,
             notify = this[Keys.notify] ?: d.notify,
             userName = this[Keys.userName] ?: d.userName,
+            themeMode = this[Keys.theme] ?: d.themeMode,
         )
     }
 
@@ -69,6 +76,7 @@ class SettingsStore(private val context: Context) {
             p[Keys.sound] = next.sound
             p[Keys.haptics] = next.haptics
             p[Keys.notify] = next.notify
+            p[Keys.theme] = next.themeMode
             p[Keys.userName] = cleanUserName(next.userName)
         }
     }

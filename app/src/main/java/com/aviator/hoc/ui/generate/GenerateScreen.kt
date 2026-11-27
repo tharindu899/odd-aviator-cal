@@ -216,7 +216,7 @@ private fun Banner(visible: Boolean, text: String, isError: Boolean) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            color = if (isError) Color(0xFF1C0D12) else Mint.LimeChip,
+            color = if (isError) Mint.PinkChip else Mint.LimeChip,
             border = BorderStroke(1.dp, if (isError) Mint.Pink.copy(alpha = 0.5f) else Mint.LimeBorder),
         ) {
             Row(

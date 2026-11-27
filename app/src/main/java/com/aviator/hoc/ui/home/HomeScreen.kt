@@ -1,7 +1,10 @@
 package com.aviator.hoc.ui.home
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,13 +35,14 @@ fun HomeScreen(
     showCountdown: Boolean,
     onGenerate: () -> Unit,
     onSettings: () -> Unit,
+    updateAvailable: Boolean = false,
     bottomPadding: Dp,
 ) {
     Column(
         modifier = Modifier.fillMaxSize().statusBarsPadding().padding(horizontal = 18.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        RiseIn(0) { Header(userName, onSettings) }
+        RiseIn(0) { Header(userName, updateAvailable, onSettings) }
         RiseIn(80) { HeroCard(state, showCountdown) }
         RiseIn(160) { StatsRow(state) }
         RiseIn(240, Modifier.weight(1f)) {
@@ -53,23 +57,32 @@ fun HomeScreen(
 }
 
 @Composable
-private fun Header(userName: String, onSettings: () -> Unit) {
+private fun Header(userName: String, updateAvailable: Boolean, onSettings: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
             Text("Hello, $userName", style = MaterialTheme.typography.headlineMedium, color = Mint.Text)
             Text("Next signal is coming up", style = MaterialTheme.typography.bodyMedium, color = Mint.Muted)
         }
-        PressableSurface(
-            onClick = onSettings,
-            shape = CircleShape,
-            color = Mint.Card,
-            border = BorderStroke(1.dp, Mint.Border2),
-            modifier = Modifier.size(44.dp),
-        ) {
-            Icon(
-                AppIcons.Menu, contentDescription = "Settings", tint = Mint.Text,
-                modifier = Modifier.padding(12.dp),
-            )
+        Box(contentAlignment = Alignment.TopEnd) {
+            PressableSurface(
+                onClick = onSettings,
+                shape = CircleShape,
+                color = Mint.Card,
+                border = BorderStroke(1.dp, Mint.Border2),
+                modifier = Modifier.size(44.dp),
+            ) {
+                Icon(
+                    AppIcons.Menu, contentDescription = "Settings", tint = Mint.Text,
+                    modifier = Modifier.padding(12.dp),
+                )
+            }
+            if (updateAvailable) {
+                // "update available" dot
+                Box(
+                    Modifier.size(12.dp).background(Mint.Lime, CircleShape)
+                        .border(2.dp, Mint.Bg, CircleShape),
+                )
+            }
         }
     }
 }

@@ -416,7 +416,7 @@ private fun ResultCard(
 
                 if (pending) {
                     RoundAction(AppIcons.Check, "Mark win", Mint.Lime, Mint.LimeChip, Mint.LimeBorder, onWin)
-                    RoundAction(AppIcons.Close, "Mark loss", Mint.PinkSoft, Color(0xFF1C0D12), Mint.Pink.copy(alpha = 0.5f), onLoss)
+                    RoundAction(AppIcons.Close, "Mark loss", Mint.PinkSoft, Mint.PinkChip, Mint.Pink.copy(alpha = 0.5f), onLoss)
                 }
             }
 
@@ -443,7 +443,7 @@ private fun ResultCard(
                         PressableSurface(
                             onClick = onDelete,
                             shape = RoundedCornerShape(14.dp),
-                            color = Color(0xFF1C0D12),
+                            color = Mint.PinkChip,
                             border = BorderStroke(1.dp, Mint.Pink.copy(alpha = 0.5f)),
                             modifier = Modifier.size(40.dp),
                         ) {
