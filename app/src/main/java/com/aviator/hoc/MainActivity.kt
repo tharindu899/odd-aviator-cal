@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.aviator.hoc.ui.AppRoot
 import com.aviator.hoc.ui.generate.GenerateViewModel
 import com.aviator.hoc.ui.home.HomeViewModel
+import com.aviator.hoc.ui.results.ResultsViewModel
 import com.aviator.hoc.ui.theme.AviatorTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,7 +36,12 @@ class MainActivity : ComponentActivity() {
                         initializer { GenerateViewModel(app.repository) }
                     },
                 )
-                AppRoot(viewModel = vm, generateViewModel = gen)
+                val results: ResultsViewModel = viewModel(
+                    factory = viewModelFactory {
+                        initializer { ResultsViewModel(app.repository) }
+                    },
+                )
+                AppRoot(viewModel = vm, generateViewModel = gen, resultsViewModel = results)
             }
         }
     }

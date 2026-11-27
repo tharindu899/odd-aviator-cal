@@ -26,5 +26,5 @@ Open the repo → **Actions** → **Build APK** → open the finished run → do
 1. Project, theme, Room DB, signal logic, CI ← done
 2. **Home screen** (hero countdown, flowing bar, upcoming list, WIN/LOSS strip, animated nav) ← done
 3. **Generate screen** (paste, live preview, examples, validation) ← done
-4. Results screen (filters, search, export)
+4. **Results screen** (filters, search, sort, edit status, delete, export) ← done
 5. Settings, sounds/haptics, auto-mark missed, polish

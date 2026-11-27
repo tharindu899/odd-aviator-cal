@@ -26,12 +26,14 @@ import com.aviator.hoc.ui.generate.GenerateViewModel
 import com.aviator.hoc.ui.home.HomeScreen
 import com.aviator.hoc.ui.home.HomeViewModel
 import com.aviator.hoc.ui.home.MarkStrip
-import com.aviator.hoc.ui.placeholder.ComingSoonScreen
+import com.aviator.hoc.ui.results.ResultsScreen
+import com.aviator.hoc.ui.results.ResultsViewModel
 
 @Composable
-fun AppRoot(viewModel: HomeViewModel, generateViewModel: GenerateViewModel) {
+fun AppRoot(viewModel: HomeViewModel, generateViewModel: GenerateViewModel, resultsViewModel: ResultsViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val genState by generateViewModel.state.collectAsStateWithLifecycle()
+    val resultsState by resultsViewModel.state.collectAsStateWithLifecycle()
     var tabIndex by rememberSaveable { mutableStateOf(0) }
     val tab = Tab.entries[tabIndex]
 
@@ -57,7 +59,7 @@ fun AppRoot(viewModel: HomeViewModel, generateViewModel: GenerateViewModel) {
                         onSubmit = generateViewModel::submit,
                         bottomPadding = bottomSpace,
                     )
-                    Tab.Results -> ComingSoonScreen("Results", part = 4)
+                    Tab.Results -> ResultsScreen(resultsViewModel, resultsState, bottomSpace)
                 }
             }
 
