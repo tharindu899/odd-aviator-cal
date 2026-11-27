@@ -16,7 +16,8 @@ android {
         // CI sets VERSION_CODE = the workflow run number, so every build is newer than the last
         val code = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
         versionCode = code
-        versionName = "3.0.$code"
+        // run 1 -> 1.0.1, run 10 -> 1.1.0, run 100 -> 2.0.0 (same formula as the CI workflow)
+        versionName = "${1 + code / 100}.${(code / 10) % 10}.${code % 10}"
         // GitHub repo the in-app updater reads releases from (CI passes the real one)
         val repo = System.getenv("UPDATE_REPO") ?: "tharindu899/odd-aviator-cal"
         buildConfigField("String", "UPDATE_REPO", "\"$repo\"")

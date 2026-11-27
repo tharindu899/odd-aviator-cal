@@ -17,9 +17,8 @@
 
 ---
 
-####  ⚠️ Disclaimer — please read first
-
 > [!WARNING]
+> ### ⚠️ Disclaimer — please read first
 > This app is a **time calculator and personal log**. It does **not** predict, guarantee or influence the result of any game.
 >
 > * 🎲 Betting and gambling can cause **real financial loss** and can be addictive. **Never risk money you cannot afford to lose.**
@@ -76,7 +75,7 @@ git push -u origin main
 
 1. Open the repo → **Actions** → **Build APK** → open the finished run.
 2. Download the `AviatorHOC-apk-N` artifact.
-3. Install **`AviatorHOC-release-N.apk`** (optimised, smooth). The debug APK is slower.
+3. Install **`AviatorHOC-vX.Y.Z-release.apk`** (optimised, smooth). The debug APK is slower.
 
 ### 🔐 Signed release & in-app updates
 
