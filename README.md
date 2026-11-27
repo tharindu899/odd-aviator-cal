@@ -13,6 +13,16 @@
 ![CI](https://img.shields.io/badge/Build-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white&style=for-the-badge)
 ![Offline](https://img.shields.io/badge/Data-100%25%20on--device-success?style=for-the-badge)
 
+[![Latest APK](https://img.shields.io/github/v/release/tharindu899/odd-aviator-cal?label=Latest%20APK&logo=android&logoColor=white&style=for-the-badge&color=B6FF5C&labelColor=000000)](https://github.com/tharindu899/odd-aviator-cal/releases/latest)
+[![Download APK](https://img.shields.io/badge/Download-APK-B6FF5C?logo=android&logoColor=black&style=for-the-badge&labelColor=000000)](https://github.com/tharindu899/odd-aviator-cal/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/tharindu899/odd-aviator-cal/total?label=Downloads&style=for-the-badge&color=2088FF&labelColor=000000)](https://github.com/tharindu899/odd-aviator-cal/releases)
+
+<br><br>
+
+<a href="https://github.com/tharindu899/odd-aviator-cal/releases/latest/download/AviatorHOC-latest.apk">
+  <img src="docs/download-apk.svg" width="320" alt="Download latest APK" />
+</a>
+
 </div>
 
 ---
