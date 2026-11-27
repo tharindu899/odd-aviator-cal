@@ -23,8 +23,8 @@ Open the repo → **Actions** → **Build APK** → open the finished run → do
   then run the workflow manually with *release* ticked.
 
 ## Parts
-1. **Project, theme, Room DB, signal logic, CI** ← this part
-2. Home screen (hero countdown, upcoming list, WIN/LOSS strip, bottom nav)
+1. Project, theme, Room DB, signal logic, CI ← done
+2. **Home screen** (hero countdown, flowing bar, upcoming list, WIN/LOSS strip, animated nav) ← done
 3. Generate screen
 4. Results screen (filters, search, export)
 5. Settings, sounds/haptics, auto-mark missed, polish

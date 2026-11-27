@@ -5,13 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.aviator.hoc.data.SignalRepository
-import com.aviator.hoc.ui.PartOneScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.aviator.hoc.ui.AppRoot
+import com.aviator.hoc.ui.home.HomeViewModel
 import com.aviator.hoc.ui.theme.AviatorTheme
-import kotlinx.coroutines.flow.map
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,15 +20,16 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
         )
 
-        val repository = (application as AviatorApp).repository
+        val app = application as AviatorApp
 
         setContent {
             AviatorTheme {
-                val statsFlow = remember { repository.signals.map { SignalRepository.statsOf(it) } }
-                val stats by statsFlow.collectAsStateWithLifecycle(
-                    initialValue = SignalRepository.statsOf(emptyList())
+                val vm: HomeViewModel = viewModel(
+                    factory = viewModelFactory {
+                        initializer { HomeViewModel(app.repository, app.settings) }
+                    },
                 )
-                PartOneScreen(repository = repository, stats = stats)
+                AppRoot(viewModel = vm, repository = app.repository)
             }
         }
     }
